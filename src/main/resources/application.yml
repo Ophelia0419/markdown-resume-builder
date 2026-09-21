@@ -1,19 +1,15 @@
 spring:
   datasource:
+    url: jdbc:postgresql://localhost:5432/resume_builder
+    username: postgres
+    password: jms2775 # docker-compose.yml에 설정했던 실제 비밀번호 입력
     driver-class-name: org.postgresql.Driver
-    # ?? PostgreSQL ?? (?? 5432)
-    url: jdbc:postgresql://localhost:5432/resume_db
-    # ?? ?? ??? ??? 'postgres' / 'password'? ????? ??
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:password}
 
   jpa:
-    # Entity ???? ???? ?????? ???? ?? ??/?? (?? ???)
     hibernate:
-      ddl-auto: update
-    # JPA? ???? SQL ??? ???? ??? ????? ??
-    show-sql: true
+      ddl-auto: update # 엔티티 클래스 기반으로 DB 테이블 자동 생성 및 수정
+    show-sql: true # 실행되는 SQL 쿼리를 콘솔에 출력
     properties:
       hibernate:
-        format_sql: true
-        default_batch_fetch_size: 100
+        format_sql: true # 콘솔에 출력되는 SQL을 보기 좋게 정렬
+        dialect: org.hibernate.dialect.PostgreSQLDialect # PostgreSQL 방언 명시
