@@ -2,21 +2,57 @@ package com.example.aws_project.service
 
 import com.example.aws_project.dto.ResumeResponse
 import com.example.aws_project.dto.ResumeSaveRequest
+import com.example.aws_project.entity.Resume
+import com.example.aws_project.repository.ResumeRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
-class ResumeService {
-    // TODO: Repository 주입 및 실제 DB 저장 로직 구현
+@Transactional(readOnly = true)
+class ResumeService(
+    private val resumeRepository: ResumeRepository
+) {
 
+    @Transactional
     fun createResume(request: ResumeSaveRequest): ResumeResponse {
-        return ResumeResponse(1L, request.title, request.content)
+        val resume = Resume(
+            title = request.title,
+            content = request.content
+        )
+
+        val savedResume = resumeRepository.save(resume)
+
+        return ResumeResponse.from(savedResume)
     }
 
     fun getResume(id: Long): ResumeResponse {
-        return ResumeResponse(id, "Sample Title", "Sample Content")
+        val resume = resumeRepository.findById(id)
+            .orElseThrow {
+                IllegalArgumentException(
+                    "해당 이력서를 찾을 수 없습니다. id=$id"
+                )
+            }
+
+        return ResumeResponse.from(resume)
     }
 
-    fun updateResume(id: Long, request: ResumeSaveRequest): ResumeResponse {
-        return ResumeResponse(id, request.title, request.content)
+    @Transactional
+    fun updateResume(
+        id: Long,
+        request: ResumeSaveRequest
+    ): ResumeResponse {
+        val resume = resumeRepository.findById(id)
+            .orElseThrow {
+                IllegalArgumentException(
+                    "해당 이력서를 찾을 수 없습니다. id=$id"
+                )
+            }
+
+        resume.update(
+            title = request.title,
+            content = request.content
+        )
+
+        return ResumeResponse.from(resume)
     }
 }

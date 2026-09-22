@@ -42,3 +42,7 @@ out/
 # Secrets
 .env
 application-secret.yml
+
+# Local database data and operating-system metadata
+postgres-data/
+.DS_Store

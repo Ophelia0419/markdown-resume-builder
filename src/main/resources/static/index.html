@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Builder</title>
+
+    <style>
+        :root {
+            --bg: #f7f7f5;
+            --panel: rgba(255, 255, 255, 0.82);
+            --panel-solid: #ffffff;
+            --border: #e7e5e4;
+            --text: #191919;
+            --muted: #6b7280;
+            --subtle: #9ca3af;
+            --primary: #111827;
+            --accent: #2563eb;
+            --accent-soft: #eff6ff;
+            --success-bg: #ecfdf5;
+            --success-border: #a7f3d0;
+            --success-text: #047857;
+            --error-bg: #fef2f2;
+            --error-border: #fecaca;
+            --error-text: #b91c1c;
+            --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04);
+            --radius-xl: 22px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at top left, #ffffff 0%, #f7f7f5 45%, #f3f4f6 100%);
+            color: var(--text);
+            font-family:
+                    Inter,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Roboto,
+                    "Noto Sans KR",
+                    sans-serif;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
+
+        .app-shell {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================
+           Topbar
+        ========================= */
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+
+            background: rgba(247, 247, 245, 0.78);
+            border-bottom: 1px solid rgba(231, 229, 228, 0.9);
+        }
+
+        .topbar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 72px;
+            padding: 0 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-mark {
+            width: 36px;
+            height: 36px;
+            border-radius: 11px;
+
+            background:
+                    linear-gradient(135deg, #111827 0%, #374151 100%);
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 800;
+            font-size: 15px;
+            letter-spacing: -0.02em;
+
+            box-shadow: var(--shadow-soft);
+        }
+
+        .brand-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .brand-title {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-subtitle {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            height: 34px;
+            padding: 0 14px;
+
+            border: 1px solid var(--border);
+            border-radius: 999px;
+
+            background: rgba(255,255,255,0.72);
+            color: #374151;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tag-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        /* =========================
+           Layout
+        ========================= */
+
+        .page {
+            width: min(1440px, 96%);
+            margin: 0 auto;
+            padding: 26px 20px 34px;
+        }
+
+        .hero {
+            margin-bottom: 22px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 18px;
+        }
+
+        .hero-card,
+        .meta-card {
+            background: var(--panel);
+            border: 1px solid rgba(231, 229, 228, 0.95);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .hero-card {
+            padding: 28px 28px 24px;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.86);
+            border: 1px solid var(--border);
+
+            font-size: 12px;
+            font-weight: 700;
+            color: #4b5563;
+        }
+
+        .hero-eyebrow::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .hero h1 {
+            margin: 18px 0 10px;
+            font-size: clamp(28px, 3vw, 42px);
+            line-height: 1.1;
+            letter-spacing: -0.04em;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.75;
+            max-width: 780px;
+        }
+
+        .flow {
+            margin-top: 22px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .flow-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 40px;
+            padding: 0 14px;
+
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.92);
+
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .flow-arrow {
+            color: #9ca3af;
+            font-weight: 700;
+        }
+
+        .meta-card {
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .meta-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .meta-title {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .meta-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-soft);
+            border-radius: 999px;
+            padding: 6px 10px;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .meta-item {
+            background: rgba(255,255,255,0.85);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 15px;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: var(--subtle);
+            margin-bottom: 6px;
+        }
+
+        .meta-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        /* =========================
+           Workspace
+        ========================= */
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 460px minmax(0, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid rgba(231, 229, 228, 0.95);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(231, 229, 228, 0.9);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .panel-heading {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .panel-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .panel-description {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .panel-tools {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-pill {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4b5563;
+
+            background: rgba(255,255,255,0.86);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 6px 10px;
+        }
+
+        .editor-panel .panel-content {
+            padding: 20px;
+        }
+
+        .preview-panel .panel-content {
+            padding: 0;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .field-hint {
+            margin-top: 7px;
+            font-size: 12px;
+            color: var(--subtle);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            height: 46px;
+            border: 1px solid #ddd6d3;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.95);
+            color: var(--text);
+            padding: 0 14px;
+            outline: none;
+            transition: 0.15s ease;
+            box-shadow: inset 0 1px 1px rgba(15,23,42,0.02);
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #cbd5e1;
+            box-shadow:
+                    0 0 0 4px rgba(37, 99, 235, 0.08);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 560px;
+            resize: vertical;
+
+            border: 1px solid #ddd6d3;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.96);
+
+            padding: 16px 16px 18px;
+            outline: none;
+
+            font-family:
+                    "SFMono-Regular",
+                    ui-monospace,
+                    SFMono-Regular,
+                    Menlo,
+                    Monaco,
+                    Consolas,
+                    "Liberation Mono",
+                    monospace;
+            font-size: 13.5px;
+            line-height: 1.75;
+            color: #1f2937;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn {
+            appearance: none;
+            border: none;
+            cursor: pointer;
+
+            height: 42px;
+            padding: 0 16px;
+
+            border-radius: 12px;
+            transition: 0.16s ease;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .btn-primary {
+            background: #111827;
+            color: white;
+            box-shadow: 0 6px 18px rgba(17, 24, 39, 0.16);
+        }
+
+        .btn-primary:hover {
+            background: #0f172a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.95);
+            color: #374151;
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        #status {
+            display: none;
+            margin-top: 14px;
+            padding: 14px 15px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .success {
+            display: block !important;
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--success-text);
+        }
+
+        .error {
+            display: block !important;
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: var(--error-text);
+        }
+
+        /* =========================
+           Preview Area
+        ========================= */
+
+        .preview-stage {
+            min-height: 100%;
+            padding: 24px;
+            background:
+                    linear-gradient(180deg, rgba(250,250,249,0.68) 0%, rgba(244,244,245,0.92) 100%);
+        }
+
+        .resume-sheet {
+            position: relative;
+            width: 100%;
+            max-width: 860px;
+            min-height: 1080px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 1px solid #ece7e3;
+            border-radius: 24px;
+            box-shadow:
+                    0 20px 50px rgba(15, 23, 42, 0.08),
+                    0 2px 6px rgba(15, 23, 42, 0.04);
+            padding: 64px 68px;
+            overflow: hidden;
+        }
+
+        .resume-sheet::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, #111827 0%, #374151 55%, #2563eb 100%);
+        }
+
+        .resume-sheet h1 {
+            margin: 0 0 8px;
+            font-size: 44px;
+            line-height: 1.05;
+            letter-spacing: -0.05em;
+            color: #111827;
+            font-weight: 800;
+        }
+
+        .resume-sheet h1 + p,
+        .resume-sheet h1 + br + p {
+            margin-top: 12px;
+        }
+
+        .resume-sheet h2 {
+            margin-top: 42px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #111827;
+            font-weight: 800;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .resume-sheet h3 {
+            margin-top: 22px;
+            margin-bottom: 8px;
+            font-size: 18px;
+            line-height: 1.35;
+            color: #111827;
+            font-weight: 700;
+        }
+
+        .resume-sheet p {
+            margin: 10px 0 12px;
+            font-size: 14px;
+            line-height: 1.85;
+            color: #4b5563;
+        }
+
+        .resume-sheet ul {
+            margin: 10px 0 18px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .resume-sheet li {
+            position: relative;
+            padding-left: 20px;
+            margin: 8px 0;
+            color: #374151;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .resume-sheet li::before {
+            content: "";
+            position: absolute;
+            left: 3px;
+            top: 11px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #2563eb;
+        }
+
+        .resume-sheet strong {
+            color: #111827;
+            font-weight: 700;
+        }
+
+        .resume-sheet code {
+            background: #f3f4f6;
+            color: #1d4ed8;
+            padding: 3px 7px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .resume-sheet hr {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 28px 0;
+        }
+
+        /* =========================
+           Footer
+        ========================= */
+
+        .footer {
+            width: min(1440px, 96%);
+            margin: 10px auto 26px;
+            padding: 0 20px;
+            color: var(--subtle);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        /* =========================
+           Responsive
+        ========================= */
+
+        @media (max-width: 1200px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .resume-sheet {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .topbar-inner {
+                padding: 0 16px;
+                height: 68px;
+            }
+
+            .page {
+                width: 100%;
+                padding: 18px 12px 28px;
+            }
+
+            .hero-card,
+            .meta-card,
+            .panel {
+                border-radius: 18px;
+            }
+
+            .hero-card {
+                padding: 22px 18px;
+            }
+
+            .meta-card {
+                padding: 18px;
+            }
+
+            .panel-header {
+                padding: 16px;
+            }
+
+            .editor-panel .panel-content {
+                padding: 16px;
+            }
+
+            textarea {
+                min-height: 420px;
+            }
+
+            .preview-stage {
+                padding: 12px;
+            }
+
+            .resume-sheet {
+                padding: 42px 26px;
+                min-height: 780px;
+                border-radius: 18px;
+            }
+
+            .resume-sheet h1 {
+                font-size: 34px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <div class="brand-mark">RB</div>
+                <div class="brand-copy">
+                    <div class="brand-title">Resume Builder</div>
+                    <div class="brand-subtitle">Markdown · Cloud Resume Workspace</div>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="tag">
+                    <span class="tag-dot"></span>
+                    AWS Connected
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+
+        <section class="hero">
+            <div class="hero-card">
+                <div class="hero-eyebrow">Realtime Resume Editor</div>
+
+                <h1>
+                    Write in Markdown.<br />
+                    Save to AWS.<br />
+                    Present like a product.
+                </h1>
+
+                <p>
+                    이력서를 Markdown으로 작성하고, 실시간으로 미리보기를 확인하며,
+                    AWS EC2에 배포된 Spring Boot 서버를 통해 RDS PostgreSQL에 저장하는
+                    클라우드 기반 Resume Builder입니다.
+                </p>
+
+                <div class="flow">
+                    <div class="flow-box">Browser</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">EC2 · Spring Boot</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">RDS · PostgreSQL</div>
+                </div>
+            </div>
+
+            <div class="meta-card">
+                <div class="meta-head">
+                    <div class="meta-title">Project Stack</div>
+                    <div class="meta-badge">Live</div>
+                </div>
+
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <div class="meta-label">Backend</div>
+                        <div class="meta-value">Kotlin · Spring Boot · JPA</div>
+                    </div>
+
+                    <div class="meta-item">
+                        <div class="meta-label">Cloud</div>
+                        <div class="meta-value">AWS EC2 · RDS · VPC</div>
+                    </div>
+
+                    <div class="meta-item">
+                        <div class="meta-label">Editor</div>
+                        <div class="meta-value">Markdown Input + Live Preview</div>
+                    </div>
+
+                    <div class="meta-item">
+                        <div class="meta-label">Goal</div>
+                        <div class="meta-value">Resume 작성 · 저장 · 포트폴리오 시연</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="workspace">
+
+            <!-- Left / Editor -->
+            <section class="panel editor-panel">
+                <div class="panel-header">
+                    <div class="panel-heading">
+                        <div class="panel-title">Editor</div>
+                        <div class="panel-description">작성 중인 Markdown 이력서를 편집합니다.</div>
+                    </div>
+
+                    <div class="panel-tools">
+                        <div class="tool-pill">Markdown</div>
+                        <div class="tool-pill">Auto Preview</div>
+                    </div>
+                </div>
+
+                <div class="panel-content">
+                    <div class="field">
+                        <label for="title">이력서 제목</label>
+                        <input
+                                id="title"
+                                type="text"
+                                value="백엔드 개발자 이력서"
+                                placeholder="이력서 제목을 입력하세요"
+                        />
+                        <div class="field-hint">
+                            저장 시 RDS PostgreSQL의 title 컬럼에 저장됩니다.
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="markdown">Markdown 내용</label>
+                        <textarea id="markdown" oninput="renderPreview()"># 홍길동
+
+Backend Software Engineer
+
+사용자의 문제를 안정적인 소프트웨어로 해결하는 백엔드 개발자를 목표로 하고 있습니다.
+
+## Skills
+
+- Kotlin / Java
+- Spring Boot
+- Spring Data JPA
+- PostgreSQL
+- AWS EC2 / RDS
+- Git / Docker
+
+## Experience
+
+### Resume Builder
+
+Markdown으로 작성한 이력서를 클라우드 환경에서 관리하는 웹 서비스를 개발했습니다.
+
+- Kotlin과 Spring Boot 기반 REST API 구현
+- Spring Data JPA를 활용한 데이터 영속화
+- AWS EC2에 애플리케이션 서버 배포
+- AWS RDS PostgreSQL 데이터베이스 구축
+- Public / Private Subnet 기반 VPC 네트워크 구성
+- Security Group을 이용하여 EC2에서만 RDS 접근 허용
+
+### Game Development Project
+
+2D 플랫폼 액션 게임 제작 프로젝트에 참여했습니다.
+
+- 게임 기획 및 레벨 디자인
+- UI 설계 및 캐릭터 디자인
+- 팀 협업을 통한 프로젝트 완성
+
+## Education
+
+### Korea Aerospace University
+
+Software Engineering
+
+## Contact
+
+**Email:** example@email.com
+
+**GitHub:** github.com/example</textarea>
+                        <div class="field-hint">
+                            `#`, `##`, `###`, `-`, `**굵게**`, `code` 형식을 지원합니다.
+                        </div>
+                    </div>
+
+                    <div class="button-row">
+                        <button class="btn btn-primary" onclick="saveResume()">
+                            저장하기
+                        </button>
+
+                        <button class="btn btn-secondary" onclick="clearEditor()">
+                            초기화
+                        </button>
+                    </div>
+
+                    <div id="status"></div>
+                </div>
+            </section>
+
+            <!-- Right / Preview -->
+            <section class="panel preview-panel">
+                <div class="panel-header">
+                    <div class="panel-heading">
+                        <div class="panel-title">Preview</div>
+                        <div class="panel-description">실시간으로 디자인된 이력서 문서를 미리 확인합니다.</div>
+                    </div>
+
+                    <div class="panel-tools">
+                        <div class="tool-pill">Resume View</div>
+                        <div class="tool-pill">A4 Style</div>
+                    </div>
+                </div>
+
+                <div class="panel-content">
+                    <div class="preview-stage">
+                        <article id="preview" class="resume-sheet"></article>
+                    </div>
+                </div>
+            </section>
+
+        </section>
+    </main>
+
+    <footer class="footer">
+        Resume Builder · Kotlin · Spring Boot · PostgreSQL · AWS EC2 · AWS RDS
+    </footer>
+</div>
+
+<script>
+    function escapeHtml(str) {
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    function renderMarkdown(markdown) {
+        const lines = markdown.split("\n");
+        let html = "";
+        let inList = false;
+
+        for (const rawLine of lines) {
+            let line = escapeHtml(rawLine);
+
+            line = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+            line = line.replace(/`(.*?)`/g, "<code>$1</code>");
+
+            if (line.startsWith("# ")) {
+                closeList();
+                html += `<h1>${line.substring(2)}</h1>`;
+                continue;
+            }
+
+            if (line.startsWith("## ")) {
+                closeList();
+                html += `<h2>${line.substring(3)}</h2>`;
+                continue;
+            }
+
+            if (line.startsWith("### ")) {
+                closeList();
+                html += `<h3>${line.substring(4)}</h3>`;
+                continue;
+            }
+
+            if (line.startsWith("- ")) {
+                if (!inList) {
+                    html += "<ul>";
+                    inList = true;
+                }
+
+                html += `<li>${line.substring(2)}</li>`;
+                continue;
+            }
+
+            if (line.trim() === "---") {
+                closeList();
+                html += "<hr>";
+                continue;
+            }
+
+            closeList();
+
+            if (line.trim() === "") {
+                html += "<br>";
+                continue;
+            }
+
+            html += `<p>${line}</p>`;
+        }
+
+        closeList();
+        return html;
+
+        function closeList() {
+            if (inList) {
+                html += "</ul>";
+                inList = false;
+            }
+        }
+    }
+
+    function renderPreview() {
+        const markdown = document.getElementById("markdown").value;
+        document.getElementById("preview").innerHTML = renderMarkdown(markdown);
+    }
+
+    async function saveResume() {
+        const title = document.getElementById("title").value.trim();
+        const content = document.getElementById("markdown").value;
+        const status = document.getElementById("status");
+
+        if (!title) {
+            showError("이력서 제목을 입력해주세요.");
+            return;
+        }
+
+        try {
+            status.className = "";
+            status.style.display = "block";
+            status.textContent = "AWS RDS에 이력서를 저장하는 중입니다...";
+
+            const response = await fetch("/api/resumes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title: title,
+                    content: content
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("HTTP " + response.status);
+            }
+
+            const data = await response.json();
+
+            status.className = "success";
+            status.innerHTML = `
+                ✓ 이력서가 AWS RDS에 저장되었습니다.
+                <br>
+                Resume ID: <strong>${data.id}</strong>
+            `;
+        } catch (error) {
+            console.error(error);
+            showError("저장에 실패했습니다. 서버 연결 상태를 확인해주세요.");
+        }
+    }
+
+    function showError(message) {
+        const status = document.getElementById("status");
+        status.className = "error";
+        status.textContent = message;
+    }
+
+    function clearEditor() {
+        document.getElementById("title").value = "";
+        document.getElementById("markdown").value = "";
+        document.getElementById("status").style.display = "none";
+        renderPreview();
+    }
+
+    renderPreview();
+</script>
+</body>
+</html>
