@@ -23,12 +23,3 @@ python3 -m http.server 8000
 
 그런 다음 브라우저에서 `http://localhost:8000`을 엽니다.
 
-## GitHub Pages Deployment
-
-1. GitHub 저장소의 **Settings**로 이동합니다.
-2. **Pages** 메뉴를 엽니다.
-3. **Build and deployment**에서 **Deploy from a branch**를 선택합니다.
-4. 브랜치는 `main`, 폴더는 `/(root)`를 선택하고 저장합니다.
-5. 배포가 완료되면 안내된 GitHub Pages URL에서 사이트를 확인합니다.
-
-모든 페이지와 에셋은 상대 경로를 사용하므로 project site와 user site 모두에서 동작합니다.
